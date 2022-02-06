@@ -17,9 +17,14 @@ export class Matrix implements MatrixActions {
   /**
    * Initialize array from 2d array.
    * @param matrix 2d array
+   * @param copy whether to copy the array or not. If copy is false, changing the initial array will change the Matrix.
    */
-  constructor(matrix: number[][]) {
-    this.matrix = matrix
+  constructor(matrix: number[][], copy: boolean = false) {
+    if (copy) {
+      this.matrix = copyArray(matrix)
+    } else {
+      this.matrix = matrix
+    }
     this.rows = matrix.length
     this.columns = matrix[0].length
     this.defineProperties()
@@ -28,9 +33,10 @@ export class Matrix implements MatrixActions {
   /**
    * Shorthand for new Matrix()
    * @param matrix 2d array
+   * @param copy whether to copy the array or not.
    */
-  public static from(matrix: number[][]) {
-    return new Matrix(matrix)
+  public static from(matrix: number[][], copy: boolean = false) {
+    return new Matrix(matrix, copy)
   }
 
   /**
@@ -111,7 +117,7 @@ export class Matrix implements MatrixActions {
       if (typeof fill === 'number') {
         matrix[j].fill(fill)
       }
-      if(identity) {
+      if (identity) {
         matrix[j][identity_index] = 1
         identity_index += 1
       }
@@ -123,19 +129,31 @@ export class Matrix implements MatrixActions {
     return new Matrix(dot(this.matrix, otherMatrix.matrix))
   }
 
-  public transpose() {
+  public transpose(): Matrix {
     return new Matrix(transpose(this.toArray()))
   }
 
-  public size() {
+  public inv(): Matrix {
+    return new Matrix(inverse(this.toArray()))
+  }
+
+  public det(): number {
+    return determinant(this.toArray())
+  }
+
+  public size(): [number, number] {
     return [this.rows, this.columns]
   }
 
-  public toArray() {
+  public copy(): Matrix {
+    return new Matrix(copyArray(this.toArray()));
+  }
+
+  public toArray(): number[][] {
     return this.matrix
   }
 
-  public toString() {
+  public toString(): string {
     return this.matrix.map(row => `[${row.join(',')}]`).join('\n')
   }
 }
@@ -179,4 +197,154 @@ export function transpose(matrix: Array<Array<number>>) {
     }
   }
   return result
+}
+
+function copyArray(matrix: number[][]): number[][] {
+  const [n, m] = [matrix.length, matrix[0].length]
+  const result = new Array(n)
+  for (let j = 0; j < n; j++) {
+    result[j] = new Array(m)
+    for (let i = 0; i < m; i++) {
+      result[j][i] = matrix[j][i]
+    }
+  }
+  return result
+}
+
+
+/**
+ * LU factorization with partial pivoting
+ * @param matrix
+ * @param tolerance
+ * @return [A: number[][], P: number[]]: Matrix A contains a copy of both matrices L-E and U as A=(L-E)+U
+ * such that P*A=L*U. P containing indices where permutation matrix is 1.
+ */
+export function LUPDecompose(matrix: Array<Array<number>> | Matrix, tolerance: number = 0.000001): [Array<Array<number>>, Array<number>] {
+  const [n, m] = typeof matrix === typeof Matrix ? (matrix as Matrix).size(): [matrix[0].length, (matrix as Array<Array<number>>).length]
+  if (n !== m) throw new Error("Matrix is not square")
+  const A = copyArray((typeof matrix === typeof Matrix ? (matrix as Matrix).toArray(): matrix) as number[][])
+
+  // Initialize permutation matrix
+  const P: Array<number> = new Array(n + 1)
+  for (let i = 0; i <= n; i++) {
+    P[i] = i
+  }
+
+  let maxIndex;
+  let maxValue;
+  for (let i = 0; i < n; i++) {
+    maxValue = 0.0
+    maxIndex = i
+
+    for (let k = i; k < n; k++) {
+      const absA = Math.abs(matrix[k][i])
+      if (absA > maxValue) {
+        maxValue = absA;
+        maxIndex = k;
+      }
+    }
+    if (maxValue < tolerance) throw new Error("Matrix is degenerate")
+
+    if (maxIndex != i) {
+      const j = P[i];
+      P[i] = P[maxIndex];
+      P[maxIndex] = j;
+
+      const partial = A[i];
+      A[i] = A[maxIndex];
+      A[maxIndex] = partial;
+
+      P[n]++;
+    }
+    for (let j = i + 1; j < n; j++) {
+      A[j][i] /= A[i][i];
+
+      for (let k = i + 1; k < n; k++) {
+        A[j][k] -= A[j][i] * A[i][k];
+      }
+    }
+  }
+  return [A, P]
+}
+
+
+/**
+ * Solve system of linear equations using LU decomposition.
+ * @param matrix
+ * @param b
+ * @param precision
+ * @return x: Solution to Mx=b
+ */
+export function solve(matrix: Array<Array<number>> | Matrix, b: number[], precision: number = 6): number[] {
+  const [A, P] = LUPDecompose(matrix)
+  const N: number = A.length
+  const x: number[] = new Array(N)
+  const precision_constant = Math.pow(10, precision)
+  for (let i = 0; i < N; i++) {
+    x[i] = b[P[i]];
+    for (let k = 0; k < i; k++) {
+      x[i] -= A[i][k] * x[k];
+    }
+  }
+  for (let i = N - 1; i >= 0; i--) {
+    for (let k = i + 1; k < N; k++) {
+      x[i] -= A[i][k] * x[k];
+    }
+    x[i] /= A[i][i];
+    x[i] = Math.round((x[i] + Number.EPSILON) * precision_constant) / precision_constant
+  }
+  return x
+}
+
+/**
+ * Calculate inverse of matrix
+ * @param matrix
+ * @param precision
+ * @return inverse: The inverse of the matrix
+ */
+export function inverse(matrix: Array<Array<number>>, precision: number = 6): number[][] {
+  if ( precision < 0 || precision > 15 ) throw new Error("Precision must be a number between 1 and 15")
+  const [A, P] = LUPDecompose(matrix)
+  const N: number = A.length
+  const inverse = new Array(N)
+  const precision_constant = Math.pow(10, precision)
+  for (let j = 0; j < N; j++) {
+    inverse[j] = new Array(N)
+  }
+  for (let j = 0; j < N; j++) {
+    for (let i = 0; i < N; i++) {
+      inverse[i][j] = P[i] == j ? 1.0 : 0.0;
+
+      for (let k = 0; k < i; k++) {
+        inverse[i][j] -= A[i][k] * inverse[k][j];
+      }
+    }
+
+    for (let i = N - 1; i >= 0; i--) {
+      for (let k = i + 1; k < N; k++) {
+        inverse[i][j] -= A[i][k] * inverse[k][j];
+      }
+
+      inverse[i][j] /= A[i][i];
+      inverse[i][j] = Math.round((inverse[i][j] + Number.EPSILON) * precision_constant) / precision_constant
+    }
+  }
+  return inverse
+}
+
+/**
+ * Return determinant of matrix
+ * @param matrix
+ * @return determinant of matrix
+ */
+export function determinant(matrix: Array<Array<number>>) {
+  const [A, P] = LUPDecompose(matrix)
+  const N: number = A.length
+  let determinant = A[0][0];
+
+  for (let i = 1; i < N; i++) {
+    determinant *= A[i][i];
+  }
+
+  return (P[N] - N) % 2 == 0 ? determinant : -determinant;
 }
