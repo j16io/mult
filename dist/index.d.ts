@@ -69,6 +69,22 @@ export declare class Matrix implements MatrixActions {
 export declare function dot(a: Array<Array<number>>, b: Array<Array<number>>): Array<Array<number>>;
 export declare function transpose(matrix: Array<Array<number>>): number[][];
 /**
+ * Append vector to matrix
+ * @param matrix
+ * @param vector
+ * @param axis
+ * @param inplace
+ */
+export declare function append(matrix: number[][], vector: number[], axis?: 0 | 1, inplace?: boolean): number[][];
+/**
+ * Prepend vector to matrix
+ * @param matrix
+ * @param vector
+ * @param axis
+ * @param inplace
+ */
+export declare function prepend(matrix: number[][], vector: number[], axis?: 0 | 1, inplace?: boolean): number[][];
+/**
  * LU factorization with partial pivoting
  * @param matrix
  * @param tolerance

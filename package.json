@@ -1,13 +1,13 @@
 {
   "name": "jonatanai",
-  "version": "0.0.9",
+  "version": "0.0.12",
   "license": "CC BY-NC-ND 4.0",
   "type": "commonjs",
   "description": "A js machine learning library.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --build --clean && tsc",
+    "build": "tsc --build --clean && tsc && uglifyjs dist/index.js -o dist/index.js",
     "test": "mocha"
   },
   "keywords": [

@@ -1,4 +1,4 @@
-# Matrix operations in Javascript
+# Machine learning in Javascript
 
 
 ## Install
@@ -8,6 +8,18 @@ npm i jonatanai --save
 ```
 
 ## Usage
+
+### Import
+
+#### ES6
+```ecma script level 6
+import { Matrix, LinearRegression, append, dot, determinant, inverse, LUPDecompose, prepend, solve, transpose } from 'jonatanai'
+```
+#### CommonJS
+```javascript
+const { Matrix, LinearRegression, append, dot, determinant, inverse, LUPDecompose, prepend, solve, transpose } = require('jonatanai')
+
+```
 
 ### Matrix from 2d array
 
