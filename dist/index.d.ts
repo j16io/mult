@@ -11,13 +11,15 @@ export declare class Matrix implements MatrixActions {
     /**
      * Initialize array from 2d array.
      * @param matrix 2d array
+     * @param copy whether to copy the array or not. If copy is false, changing the initial array will change the Matrix.
      */
-    constructor(matrix: number[][]);
+    constructor(matrix: number[][], copy?: boolean);
     /**
      * Shorthand for new Matrix()
      * @param matrix 2d array
+     * @param copy whether to copy the array or not.
      */
-    static from(matrix: number[][]): Matrix;
+    static from(matrix: number[][], copy?: boolean): Matrix;
     /**
      * Initialize empty matrix
      * @param columns number of columns
@@ -37,6 +39,11 @@ export declare class Matrix implements MatrixActions {
      */
     static ones(rows: number, columns?: number): Matrix;
     /**
+     * Initialize identity matrix
+     * @param dimension
+     */
+    static identity(dimension: number): Matrix;
+    /**
      * Initialize a matrix and fill it with a number
      * @param columns number of columns
      * @param rows number of rows
@@ -47,7 +54,10 @@ export declare class Matrix implements MatrixActions {
     private static emptyMatrix;
     dot(otherMatrix: Matrix): Matrix;
     transpose(): Matrix;
-    size(): number[];
+    inv(): Matrix;
+    det(): number;
+    size(): [number, number];
+    copy(): Matrix;
     toArray(): number[][];
     toString(): string;
 }
@@ -57,5 +67,44 @@ export declare class Matrix implements MatrixActions {
  * @param b Matrix b
  */
 export declare function dot(a: Array<Array<number>>, b: Array<Array<number>>): Array<Array<number>>;
-export declare function transpose(matrix: Array<Array<number>>): any[];
+export declare function transpose(matrix: Array<Array<number>>): number[][];
+/**
+ * LU factorization with partial pivoting
+ * @param matrix
+ * @param tolerance
+ * @return [A: number[][], P: number[]]: Matrix A contains a copy of both matrices L-E and U as A=(L-E)+U
+ * such that P*A=L*U. P containing indices where permutation matrix is 1.
+ */
+export declare function LUPDecompose(matrix: Array<Array<number>> | Matrix, tolerance?: number): [Array<Array<number>>, Array<number>];
+/**
+ * Solve system of linear equations using LU decomposition.
+ * @param matrix
+ * @param b
+ * @param precision
+ * @return x: Solution to Mx=b
+ */
+export declare function solve(matrix: Array<Array<number>> | Matrix, b: number[], precision?: number): number[];
+/**
+ * Calculate inverse of matrix
+ * @param matrix
+ * @param precision
+ * @return inverse: The inverse of the matrix
+ */
+export declare function inverse(matrix: Array<Array<number>>, precision?: number): number[][];
+/**
+ * Return determinant of matrix
+ * @param matrix
+ * @return determinant of matrix
+ */
+export declare function determinant(matrix: Array<Array<number>>): number;
+interface Solver {
+    weights: any;
+    train: Function;
+    predict: Function;
+}
+export declare class LinearRegression implements Solver {
+    weights: Array<number>;
+    train(X: number[][], y: number[][]): number[];
+    predict(X: number[][]): number[][];
+}
 export {};

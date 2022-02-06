@@ -1,6 +1,6 @@
 {
   "name": "jonatanai",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "CC BY-NC-ND 4.0",
   "type": "commonjs",
   "description": "A js machine learning library.",

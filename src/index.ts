@@ -99,7 +99,7 @@ export class Matrix implements MatrixActions {
   private defineProperties() {
     Object.defineProperty(this, 'T', {
       get: () => {
-        return new Matrix(transpose(this.toArray()))
+        return new Matrix(transpose(this.toArray()), true)
       }
     })
     for (let j = 0; j < this.columns; ++j) {
@@ -187,7 +187,7 @@ export function dot(a: Array<Array<number>>, b: Array<Array<number>>): Array<Arr
   return result
 }
 
-export function transpose(matrix: Array<Array<number>>) {
+export function transpose(matrix: Array<Array<number>>): number[][] {
   const [c_j, c_i] = [matrix.length, matrix[0].length]
   const result = new Array(c_i)
   for (let j = 0; j < c_i; j++) {
@@ -211,6 +211,55 @@ function copyArray(matrix: number[][]): number[][] {
   return result
 }
 
+/**
+ * Append vector to matrix
+ * @param matrix
+ * @param vector
+ * @param axis
+ * @param inplace
+ */
+export function append(matrix: number[][], vector: number[], axis: 0 | 1 = 0, inplace: boolean = false): number[][] {
+  if (axis === 0) {
+    let result;
+    if (inplace) {
+      result = matrix
+    } else {
+      result = copyArray(matrix)
+    }
+    result.push(vector)
+    return result
+  } else {
+    const result = transpose(copyArray(matrix))
+    result.push(vector)
+    return transpose(result)
+  }
+}
+
+
+/**
+ * Prepend vector to matrix
+ * @param matrix
+ * @param vector
+ * @param axis
+ * @param inplace
+ */
+export function prepend(matrix: number[][], vector: number[], axis: 0 | 1 = 0, inplace: boolean = false): number[][] {
+  if (axis === 0) {
+    let result;
+    if (inplace) {
+      result = matrix
+    } else {
+      result = copyArray(matrix)
+    }
+    result.unshift(vector)
+    return result
+  } else {
+    const result = transpose(copyArray(matrix))
+    result.unshift(vector)
+    return transpose(result)
+  }
+}
+
 
 /**
  * LU factorization with partial pivoting
@@ -220,9 +269,9 @@ function copyArray(matrix: number[][]): number[][] {
  * such that P*A=L*U. P containing indices where permutation matrix is 1.
  */
 export function LUPDecompose(matrix: Array<Array<number>> | Matrix, tolerance: number = 0.000001): [Array<Array<number>>, Array<number>] {
-  const [n, m] = typeof matrix === typeof Matrix ? (matrix as Matrix).size(): [matrix[0].length, (matrix as Array<Array<number>>).length]
+  const [n, m] = typeof matrix === typeof Matrix ? (matrix as Matrix).size() : [matrix[0].length, (matrix as Array<Array<number>>).length]
   if (n !== m) throw new Error("Matrix is not square")
-  const A = copyArray((typeof matrix === typeof Matrix ? (matrix as Matrix).toArray(): matrix) as number[][])
+  const A = copyArray((typeof matrix === typeof Matrix ? (matrix as Matrix).toArray() : matrix) as number[][])
 
   // Initialize permutation matrix
   const P: Array<number> = new Array(n + 1)
@@ -275,7 +324,7 @@ export function LUPDecompose(matrix: Array<Array<number>> | Matrix, tolerance: n
  * @param precision
  * @return x: Solution to Mx=b
  */
-export function solve(matrix: Array<Array<number>> | Matrix, b: number[], precision: number = 6): number[] {
+export function solve(matrix: Array<Array<number>> | Matrix, b: number[], precision: number = 10): number[] {
   const [A, P] = LUPDecompose(matrix)
   const N: number = A.length
   const x: number[] = new Array(N)
@@ -302,8 +351,8 @@ export function solve(matrix: Array<Array<number>> | Matrix, b: number[], precis
  * @param precision
  * @return inverse: The inverse of the matrix
  */
-export function inverse(matrix: Array<Array<number>>, precision: number = 6): number[][] {
-  if ( precision < 0 || precision > 15 ) throw new Error("Precision must be a number between 1 and 15")
+export function inverse(matrix: Array<Array<number>>, precision: number = 10): number[][] {
+  if (precision < 0 || precision > 15) throw new Error("Precision must be a number between 1 and 15")
   const [A, P] = LUPDecompose(matrix)
   const N: number = A.length
   const inverse = new Array(N)
@@ -347,4 +396,28 @@ export function determinant(matrix: Array<Array<number>>) {
   }
 
   return (P[N] - N) % 2 == 0 ? determinant : -determinant;
+}
+
+interface Solver {
+  weights;
+  train: Function
+  predict: Function
+}
+
+export class LinearRegression implements Solver {
+
+  weights: Array<number>
+
+  train(X: number[][], y: number[][]) {
+    const x = prepend(X, new Array(X.length).fill(1), 1)
+    const t = transpose(x)
+    this.weights = solve(dot(t, x), transpose(dot(t, y))[0])
+    return this.weights
+  }
+
+  predict(X: number[][]) {
+    const x = prepend(X, new Array(X.length).fill(1), 1)
+    return dot(x, transpose(new Array(this.weights)));
+  }
+
 }

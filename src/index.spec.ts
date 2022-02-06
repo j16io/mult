@@ -1,5 +1,5 @@
 import {equal, deepEqual, notDeepEqual} from 'assert'
-import {determinant, dot, inverse, Matrix, solve, transpose} from './index'
+import {append, determinant, dot, inverse, LinearRegression, Matrix, prepend, solve, transpose} from './index'
 
 const compareArrays = (a: number[][], b: number[][], precision: number = 10): boolean => {
   const [a_y, a_x] = [a.length, a[0].length]
@@ -167,4 +167,81 @@ let A = [[2, 3, -2], [1, -1, -3], [1, 5, 2]]
 let B = [7, 5, 10]
 let true_x = [99, -35, 43]
 deepEqual(solve(A, B), true_x)
+
+// Linear regression
+const clf = new LinearRegression()
+const lr_X = [
+  [0.18, 0.89],
+  [1.0, 0.26],
+  [0.92, 0.11],
+  [0.07, 0.37],
+  [0.85, 0.16],
+  [0.99, 0.41],
+  [0.87, 0.47],
+]
+const lr_y = [
+  [109.85],
+  [155.72],
+  [137.66],
+  [76.17],
+  [139.75],
+  [162.6],
+  [151.77],
+]
+const lr_X_test = [
+  [0.49, 0.18],
+  [0.57, 0.83],
+  [0.56, 0.64],
+  [0.76, 0.18],
+]
+const lr_y_test = [
+  [105.21455835],
+  [142.67095131],
+  [132.93605469],
+  [129.70175405],
+]
+clf.train(lr_X, lr_y)
+equal(compareArrays(lr_y_test, clf.predict(lr_X_test)), true)
+
+
+// Test prepend
+
+const V = [0,0,0]
+const P = [
+ [1,2,3],
+ [4,5,6],
+ [7,8,9]
+]
+const py = [
+ [0,0,0],
+ [1,2,3],
+ [4,5,6],
+ [7,8,9]
+]
+deepEqual(prepend(P,V,0), py)
+const px = [
+ [0,1,2,3],
+ [0,4,5,6],
+ [0,7,8,9]
+]
+deepEqual(prepend(P, V,1), px)
+
+
+// Test append
+
+const ay = [
+ [1,2,3],
+ [4,5,6],
+ [7,8,9],
+ [0,0,0]
+]
+deepEqual(append(P, V,0), ay)
+
+
+const ax = [
+ [1,2,3,0],
+ [4,5,6,0],
+ [7,8,9,0]
+]
+deepEqual(append(P, V,1), ax)
 
