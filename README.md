@@ -1,5 +1,6 @@
 # Machine learning in Javascript
-
+[![NPM version][npm-image]][npm-url]
+[![npm download][download-image]][download-url]
 
 ## Install
 
@@ -229,4 +230,9 @@ m.toString()
 # [4,3,3]
 # [4,4,4]
 ```
+## License
 
+[CC BY-NC-ND 4.0](./LICENSE)
+
+[npm-url]: https://www.npmjs.com/package/jonatanai
+[download-url]: https://www.npmjs.com/package/jonatanai
