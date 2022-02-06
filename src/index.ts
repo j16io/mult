@@ -1,6 +1,8 @@
 interface MatrixActions {
   T: Matrix
+
   dot(otherMatrix: Matrix): Matrix
+
   transpose(): Matrix
 }
 
@@ -71,6 +73,14 @@ export class Matrix implements MatrixActions {
   }
 
   /**
+   * Initialize identity matrix
+   * @param dimension
+   */
+  public static identity(dimension: number) {
+    return new Matrix(this.emptyMatrix(dimension, dimension, 0, true));
+  }
+
+  /**
    * Initialize a matrix and fill it with a number
    * @param columns number of columns
    * @param rows number of rows
@@ -93,12 +103,17 @@ export class Matrix implements MatrixActions {
     }
   }
 
-  private static emptyMatrix(rows: number, columns: number, fill: number = undefined) {
+  private static emptyMatrix(rows: number, columns: number, fill: number = undefined, identity: boolean = false) {
     const matrix: number[][] = new Array(rows)
+    let identity_index = 0
     for (let j = 0; j < rows; j++) {
       matrix[j] = new Array(columns)
       if (typeof fill === 'number') {
         matrix[j].fill(fill)
+      }
+      if(identity) {
+        matrix[j][identity_index] = 1
+        identity_index += 1
       }
     }
     return matrix

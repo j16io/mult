@@ -9,21 +9,40 @@ npm i jonatanai --save
 
 ## Usage
 
-### Creating matrix
+### Matrix from 2d array
 
 ```
 let a = [[2, 2], [2, 2]]
 new Matrix(a)
 Matrix.from(a)
+```
 
-Matrix.ones(2) // = [[1, 1], [1, 1]]
-Matrix.zeros(2) // = [[0, 0], [0, 0]]
+### Empty matrix
+
+```
 Matrix.empty(2) // = [[undefined, undefined], [undefined, undefined]]
-
-Matrix.ones(2, 3) // = [[1, 1], [1, 1], [1, 1]]
-Matrix.zeros(2, 3) // = [[0, 0], [0, 0], [0, 0]]
 Matrix.empty(2, 3) // = [[undefined, undefined], [undefined, undefined], [undefined, undefined]]
+```
 
+### Matrix of ones
+
+```
+Matrix.ones(2) // = [[1, 1], [1, 1]]
+Matrix.ones(2, 3) // = [[0, 0], [0, 0], [0, 0]]
+```
+
+
+### Zero matrix
+
+```
+Matrix.zeros(2) // = [[0, 0], [0, 0]]
+Matrix.zeros(2, 3) // = [[0, 0], [0, 0], [0, 0]]
+```
+
+### Identity matrix
+
+```
+Matrix.identity(3) // = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 ```
 
 ### Matrix multiplication

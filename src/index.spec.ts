@@ -109,3 +109,9 @@ const c_t = [[1,3,5],[2,4,6]]
 equal(compareArrays(c_t, Matrix.from(transpose(a_t)).toArray()), true)
 equal(compareArrays(c_t, Matrix.from(a_t).transpose().toArray()), true)
 equal(compareArrays(c_t, Matrix.from(a_t).T.toArray()), true)
+
+
+// Test identity
+const identity = Matrix.identity(3)
+const true_identity = Matrix.from([[1,0,0],[0,1,0],[0,0,1]])
+deepEqual(identity, true_identity)
