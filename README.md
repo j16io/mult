@@ -1,6 +1,4 @@
 # Machine learning in Javascript
-[![NPM version][npm-image]][npm-url]
-[![npm download][download-image]][download-url]
 
 ## Install
 
@@ -158,6 +156,34 @@ append(a,v,1)
 // ]
 ```
 
+### Add
+```
+    const m1 = Matrix.from([[1, 1], [1, 1]])
+    const m2 = Matrix.from([[1, 1], [1, 1]])
+    m1.add(m2) // [[2, 2], [2, 2]]
+```
+
+### Subtract
+```
+    const m1 = Matrix.from([[2, 2], [2, 2]])
+    const m2 = Matrix.from([[1, 1], [1, 1]])
+    m1.subtract(m2) // [[1, 1], [1, 1]]
+```
+
+
+### Norm
+```
+    let m = Matrix.from([[1, 1], [1, 1]])
+    m.norm() // 2
+
+    m = Matrix.from([[2, 2], [2, 2]])
+    m.norm() // 4
+
+    m = Matrix.from([[3, 3], [3, 3]])
+    m.norm() // 6
+```
+
+
 ### Solve matrix equations
 
 ```
@@ -233,6 +259,3 @@ m.toString()
 ## License
 
 [CC BY-NC-ND 4.0](./LICENSE)
-
-[npm-url]: https://www.npmjs.com/package/jonatanai
-[download-url]: https://www.npmjs.com/package/jonatanai

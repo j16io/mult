@@ -1,18 +1,7 @@
-interface MatrixActions {
-  T: Matrix
-
-  dot(otherMatrix: Matrix): Matrix
-
-  transpose(): Matrix
-}
-
-export class Matrix implements MatrixActions {
+export class Matrix {
   private readonly rows: number
   private readonly columns: number
   private readonly matrix: number[][]
-
-  // Matrix transpose
-  T: Matrix
 
   /**
    * Initialize array from 2d array.
@@ -97,17 +86,17 @@ export class Matrix implements MatrixActions {
   }
 
   private defineProperties() {
-    Object.defineProperty(this, 'T', {
-      get: () => {
-        return new Matrix(transpose(this.toArray()), true)
-      }
-    })
     for (let j = 0; j < this.columns; ++j) {
       Object.defineProperty(this, j, {
         value: this.matrix[j]
       })
     }
   }
+
+  get T() {
+    return new Matrix(transpose(this.toArray()), true)
+  }
+
 
   private static emptyMatrix(rows: number, columns: number, fill: number = undefined, identity: boolean = false) {
     const matrix: number[][] = new Array(rows)
@@ -127,6 +116,18 @@ export class Matrix implements MatrixActions {
 
   public dot(otherMatrix: Matrix): Matrix {
     return new Matrix(dot(this.matrix, otherMatrix.matrix))
+  }
+
+  public add(otherMatrix: Matrix): Matrix {
+    return new Matrix(add(this.matrix, otherMatrix.matrix))
+  }
+
+  public subtract(otherMatrix: Matrix): Matrix {
+    return new Matrix(subtract(this.matrix, otherMatrix.matrix))
+  }
+
+  public norm() {
+    return norm(this.matrix)
   }
 
   public transpose(): Matrix {
@@ -186,6 +187,57 @@ export function dot(a: Array<Array<number>>, b: Array<Array<number>>): Array<Arr
 
   return result
 }
+
+/**
+ * Subtract two matrices
+ * @param matrix1
+ * @param matrix2
+ */
+export function subtract(matrix1: Array<Array<number>>, matrix2: Array<Array<number>>) {
+  const [n, m] = [matrix1.length, matrix1[0].length]
+  const result = new Array(n)
+  for (let r = 0; r < n; r++) {
+    result[r] = new Array(m)
+    for (let c = 0; c < m; c++) {
+      result[r][c] = matrix1[r][c] - matrix2[r][c]
+    }
+  }
+  return result
+}
+
+/**
+ * Add two matrices
+ * @param matrix1
+ * @param matrix2
+ */
+export function add(matrix1: Array<Array<number>>, matrix2: Array<Array<number>>) {
+  const [n, m] = [matrix1.length, matrix1[0].length]
+  const result = new Array(n)
+  for (let r = 0; r < n; r++) {
+    result[r] = new Array(m)
+    for (let c = 0; c < m; c++) {
+      result[r][c] = matrix1[r][c] + matrix2[r][c]
+    }
+  }
+  return result
+}
+
+/**
+ * P norm
+ * @param matrix1
+ * @param matrix2
+ */
+export function norm(matrix: Array<Array<number>>, p: number = 2) {
+  const [n, m] = [matrix.length, matrix[0].length]
+  let sum = 0
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < m; c++) {
+      sum += Math.pow(matrix[r][c], p)
+    }
+  }
+  return Math.pow(sum, 1/p)
+}
+
 
 export function transpose(matrix: Array<Array<number>>): number[][] {
   const [c_j, c_i] = [matrix.length, matrix[0].length]
