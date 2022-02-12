@@ -69,12 +69,12 @@ Matrix.identity(3) // = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 ```
 let a = [[2, 2], [2, 2]]
 let b = [[2, 2], [2, 2]]
-dot(a, b) // = [[8, 8], [8, 8]]
+matmul(a, b) // = [[8, 8], [8, 8]]
 
 const m1 = new Matrix(a)
 const m2 = new Matrix(b)
 
-m1.dot(m2) // = [[8, 8], [8, 8]]
+m1.matmul(m2) // = [[8, 8], [8, 8]]
 
 ```
 ### Transpose

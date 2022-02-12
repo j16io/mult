@@ -1,6 +1,6 @@
 import {equal, deepEqual, notDeepEqual} from 'assert'
 import {describe, test} from 'mocha'
-import {add, append, determinant, dot, inverse, LinearRegression, Matrix, prepend, solve, transpose} from './index'
+import {add, append, determinant, matmul, inverse, LinearRegression, Matrix, prepend, solve, transpose} from './index'
 
 const compareArrays = (a: number[][], b: number[][], precision: number = 10): boolean => {
   const [a_y, a_x] = [a.length, a[0].length]
@@ -19,23 +19,23 @@ describe("Matrix operations", () => {
     let a = [[2, 2], [2, 2]]
     let b = [[2, 2], [2, 2]]
     let c = [[8, 8], [8, 8]]
-    let res = dot(a, b)
+    let res = matmul(a, b)
 
     equal(compareArrays(res, c), true)
 
     a = [[2, 2, 2]]
     b = [[1], [2], [3]]
     c = [[12]]
-    res = dot(a, b)
+    res = matmul(a, b)
 
     equal(compareArrays(res, c), true)
 
-    const res_m = Matrix.from(a).dot(Matrix.from(b))
+    const res_m = Matrix.from(a).matmul(Matrix.from(b))
     const c_m = Matrix.from(c)
     equal(compareArrays(res_m.toArray(), c_m.toArray()), true)
 
     c = [[2, 2, 2], [4, 4, 4], [6, 6, 6]]
-    res = dot(b, a)
+    res = matmul(b, a)
 
     equal(compareArrays(res, c), true)
   })

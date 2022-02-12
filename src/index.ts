@@ -114,8 +114,8 @@ export class Matrix {
     return matrix
   }
 
-  public dot(otherMatrix: Matrix): Matrix {
-    return new Matrix(dot(this.matrix, otherMatrix.matrix))
+  public matmul(otherMatrix: Matrix): Matrix {
+    return new Matrix(matmul(this.matrix, otherMatrix.matrix))
   }
 
   public add(otherMatrix: Matrix): Matrix {
@@ -164,7 +164,7 @@ export class Matrix {
  * @param a Matrix a
  * @param b Matrix b
  */
-export function dot(a: Array<Array<number>>, b: Array<Array<number>>): Array<Array<number>> {
+export function matmul(a: Array<Array<number>>, b: Array<Array<number>>): Array<Array<number>> {
   const [a_y, a_x] = [a.length, a[0].length]
   const [b_y, b_x] = [b.length, b[0].length]
   if (a_x !== b_y) {
@@ -463,13 +463,13 @@ export class LinearRegression implements Solver {
   train(X: number[][], y: number[][]) {
     const x = prepend(X, new Array(X.length).fill(1), 1)
     const t = transpose(x)
-    this.weights = solve(dot(t, x), transpose(dot(t, y))[0])
+    this.weights = solve(matmul(t, x), transpose(matmul(t, y))[0])
     return this.weights
   }
 
   predict(X: number[][]) {
     const x = prepend(X, new Array(X.length).fill(1), 1)
-    return dot(x, transpose(new Array(this.weights)));
+    return matmul(x, transpose(new Array(this.weights)));
   }
 
 }
