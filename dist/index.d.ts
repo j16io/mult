@@ -1,13 +1,7 @@
-interface MatrixActions {
-    T: Matrix;
-    dot(otherMatrix: Matrix): Matrix;
-    transpose(): Matrix;
-}
-export declare class Matrix implements MatrixActions {
+export declare class Matrix {
     private readonly rows;
     private readonly columns;
     private readonly matrix;
-    T: Matrix;
     /**
      * Initialize array from 2d array.
      * @param matrix 2d array
@@ -51,8 +45,12 @@ export declare class Matrix implements MatrixActions {
      */
     static fill(rows: number, columns: number, fill: number): Matrix;
     private defineProperties;
+    get T(): Matrix;
     private static emptyMatrix;
     dot(otherMatrix: Matrix): Matrix;
+    add(otherMatrix: Matrix): Matrix;
+    subtract(otherMatrix: Matrix): Matrix;
+    norm(): number;
     transpose(): Matrix;
     inv(): Matrix;
     det(): number;
@@ -67,6 +65,24 @@ export declare class Matrix implements MatrixActions {
  * @param b Matrix b
  */
 export declare function dot(a: Array<Array<number>>, b: Array<Array<number>>): Array<Array<number>>;
+/**
+ * Subtract two matrices
+ * @param matrix1
+ * @param matrix2
+ */
+export declare function subtract(matrix1: Array<Array<number>>, matrix2: Array<Array<number>>): any[];
+/**
+ * Add two matrices
+ * @param matrix1
+ * @param matrix2
+ */
+export declare function add(matrix1: Array<Array<number>>, matrix2: Array<Array<number>>): any[];
+/**
+ * P norm
+ * @param matrix1
+ * @param matrix2
+ */
+export declare function norm(matrix: Array<Array<number>>, p?: number): number;
 export declare function transpose(matrix: Array<Array<number>>): number[][];
 /**
  * Append vector to matrix
