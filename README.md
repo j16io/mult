@@ -3,7 +3,7 @@
 ## Install
 
 ```
-npm i jonatanai --save
+npm i mult --save
 ```
 
 ## Usage
