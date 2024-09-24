@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jonatanai/jonatanai"
+    "url": "git+https://github.com/j16io/mult.git"
   },
   "scripts": {
     "build": "tsc --build --clean && tsc && uglifyjs dist/index.js -o dist/index.js",
