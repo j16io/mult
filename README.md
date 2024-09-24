@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/mult.svg)](https://badge.fury.io/js/mult)
+
 # Machine learning in Javascript
 
 ## Install
